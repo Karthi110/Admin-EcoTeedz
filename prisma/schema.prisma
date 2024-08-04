@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String
+  name      String
+  address   String
+  mobile    String
+  avatarUrl String?
+  cart      Cart[]
+  order     Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id             String           @id @default(cuid())
+  title          String
+  description    String
+  media          String[]
+  status         ProductStatus    @default(DRAFT)
+  comparePrice   Float?
+  price          Float            @default(0.0)
+  inventory      Int              @default(0)
+  Variant        Variant[]
+  variantOptions VariantOptions[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+enum ProductStatus {
+  ARCHIVED
+  DRAFT
+  ACTIVE
+}
+
+model Variant {
+  id        String   @id @default(cuid())
+  name      String
+  options   String[]
+  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String?
+}
+
+model VariantOptions {
+  id        String   @id @default(cuid())
+  option    String[]
+  price     Float    @default(0.0)
+  inventory Int      @default(0)
+  productId String?
+  Product   Product? @relation(fields: [productId], references: [id])
+}
+
+model Cart {
+  id        String  @id @default(cuid())
+  User      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  productId String
+  optionId  String
+  quantity  Int
+}
+
+model Order {
+  id          String        @id @default(cuid())
+  orderItems  OrderItem[]
+  totalAmount Float
+  status      OrderStatus   @default(PENDING)
+  payment     PaymentStatus @default(PENDING)
+  User        User?         @relation(fields: [userId], references: [id])
+  userId      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  CANCELED
+  FULFIED
+}
+
+enum PaymentStatus {
+  PAID
+  FAILED
+  PENDING
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  productId String
+  variantId String?
+  quantity  Int
+  price     Float
+  Order     Order?  @relation(fields: [orderId], references: [id])
+  orderId   String?
+}
