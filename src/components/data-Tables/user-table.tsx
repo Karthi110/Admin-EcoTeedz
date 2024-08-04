@@ -93,7 +93,9 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "email",
     header: "Email",
-    cell: ({ row }) => <h2 className="text-base">{row.getValue("email")}</h2>,
+    cell: ({ row }) => (
+      <h2 className="text-base blur-sm">{row.getValue("email")}</h2>
+    ),
   },
   {
     accessorKey: "createdAt",

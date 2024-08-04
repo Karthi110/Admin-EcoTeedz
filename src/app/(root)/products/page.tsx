@@ -1,3 +1,4 @@
+"use client";
 import { ProductChart } from "@/components/charts/product-chart";
 import { ProductTable } from "@/components/data-Tables/product-table";
 import {
@@ -18,12 +19,19 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchProducts } from "@/db/actions";
+import { fetchProductsByStatus } from "@/db/actions";
+import { useQuery } from "@tanstack/react-query";
 import { PlusCircle, Search } from "lucide-react";
 import Link from "next/link";
 
-const ProductPage = async () => {
-  const products = await fetchProducts();
+const ProductPage = () => {
+  const { data: products } = useQuery({
+    queryKey: ["products"],
+    queryFn: () => fetchProductsByStatus(),
+  });
+
+  if (!products) return;
+
   return (
     <div>
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
@@ -108,7 +116,7 @@ const ProductPage = async () => {
             </Card>
           </TabsContent>
         </Tabs>
-        <ProductChart total={products.all.length} />
+        <ProductChart />
       </div>
     </div>
   );

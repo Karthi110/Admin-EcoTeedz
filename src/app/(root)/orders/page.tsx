@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardContent,
@@ -21,9 +22,14 @@ import { OrderTable } from "@/components/data-Tables/order-table";
 import { fetchOrders } from "@/db/actions";
 import OrderChart from "@/components/charts/order-chart";
 import OrderDetails from "@/components/order-details";
+import { useQuery } from "@tanstack/react-query";
 
-const OrderPage = async () => {
-  const data = await fetchOrders();
+const OrderPage = () => {
+  const { data } = useQuery({
+    queryKey: ["orders"],
+    queryFn: () => fetchOrders(),
+  });
+  if (!data) return;
   return (
     <div>
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">

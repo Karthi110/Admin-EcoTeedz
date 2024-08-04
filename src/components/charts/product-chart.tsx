@@ -19,7 +19,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { CountProductsByStatus } from "@/db/actions";
 
-export function ProductChart({ total }: { total: number }) {
+export function ProductChart() {
   const { data, isLoading } = useQuery({
     queryKey: ["chart_data"],
     queryFn: () => CountProductsByStatus(),
@@ -52,6 +52,10 @@ export function ProductChart({ total }: { total: number }) {
       color: "hsl(var(--chart-3))",
     },
   } satisfies ChartConfig;
+
+  let total = 0;
+
+  data?.map((d) => (total += d._count.id));
 
   return (
     <div className="flex-[.5] grid grid-cols-1 mt-10 gap-2 p-1 w-full">

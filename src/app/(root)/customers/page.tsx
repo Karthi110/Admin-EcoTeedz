@@ -1,3 +1,4 @@
+"use client";
 import { UserTable } from "@/components/data-Tables/user-table";
 import { fetchUsers } from "@/db/actions";
 import {
@@ -21,9 +22,13 @@ import { Search, PlusCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import UserChart from "@/components/charts/user-chart";
+import { useQuery } from "@tanstack/react-query";
 
-const Customers = async () => {
-  const data = await fetchUsers();
+const Customers = () => {
+  const { data } = useQuery({
+    queryKey: ["customers"],
+    queryFn: () => fetchUsers(),
+  });
   if (!data) return;
   return (
     <div>

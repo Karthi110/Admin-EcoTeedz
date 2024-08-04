@@ -26,7 +26,7 @@ export const CountProductsByStatus = async () => {
   return data;
 };
 
-export const fetchProducts = async () => {
+export const fetchProductsByStatus = async () => {
   const products = await db.product.findMany();
 
   let ActiveProducts = products.filter(
