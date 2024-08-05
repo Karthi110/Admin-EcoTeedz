@@ -29,10 +29,23 @@ const OrderPage = () => {
     queryKey: ["orders"],
     queryFn: () => fetchOrders(),
   });
-  if (!data) return;
+  if (!data)
+    return (
+      <div className="h-full w-full flex flex-col p-4">
+        <div className="w-full h-full flex-[.8] grid grid-cols-3 animate-pulse rounded-md p-2 gap-4">
+          <div className="bg-muted w-full h-full rounded-md" />
+          <div className="bg-muted w-full h-full rounded-md" />
+          <div className="bg-muted w-full h-full rounded-md" />
+        </div>
+        <div className="flex-1 grid grid-cols-3 gap-4 p-2">
+          <div className="bg-muted w-full h-full rounded-md col-span-2" />
+          <div className="bg-muted w-full h-full rounded-md" />
+        </div>
+      </div>
+    );
   return (
     <div>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
         <Breadcrumb className="hidden md:flex">
           <BreadcrumbList>
             <BreadcrumbItem>

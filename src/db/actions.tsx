@@ -1,5 +1,6 @@
 "use server";
 
+import { User } from "@prisma/client";
 import { db } from ".";
 
 let ld = Date.now() - 24 * 60 * 60 * 1000;
@@ -37,6 +38,17 @@ export const fetchProductsByStatus = async () => {
   return { all: products, active: ActiveProducts, draft: DraftProducts };
 };
 
+export const fetchActiveProducts = async () => {
+  const active = await db.product.findMany({
+    where: { status: { equals: "ACTIVE" } },
+  });
+
+  const latestActive = active.filter(
+    (p) => p.createdAt.toISOString() > lastDay
+  );
+  return { active: active.length, latest: latestActive.length };
+};
+
 export const fetchUsersByDate = async () => {
   const data = await db.user.findMany({});
   const dayCount = data.filter((d) => d.createdAt.toISOString() > lastDay);
@@ -55,6 +67,8 @@ export const fetchOrders = async () => {
       User: {
         select: {
           email: true,
+          name: true,
+          avatarUrl: true,
         },
       },
       _count: { select: { orderItems: true } },
@@ -117,7 +131,46 @@ export const totalEarnings = async () => {
     },
   });
 
-  return { all: earning._sum, day: dayEarning._sum, week: weekEarning._sum };
+  return {
+    all: earning._sum.totalAmount,
+    day: dayEarning._sum.totalAmount,
+    week: weekEarning._sum.totalAmount,
+  };
+};
+
+export const monthlyIncome = async () => {
+  const monthly = await db.order.groupBy({
+    by: "createdAt",
+    where: {
+      payment: "PAID",
+    },
+    _sum: { totalAmount: true },
+  });
+  let m: Array<{ month: string; amount: number }> = [];
+  monthly.map((mon) =>
+    m.push({
+      month: mon.createdAt.getMonth().toString(),
+      amount: mon._sum.totalAmount || 0,
+    })
+  );
+
+  let chartData: any = {};
+
+  m.map((data) => {
+    if (data.month! in chartData) {
+      chartData[data.month] += data.amount;
+    } else {
+      chartData[data.month] = data.amount;
+    }
+  });
+
+  m = [];
+
+  for (var i in chartData) {
+    m.push({ month: i, amount: chartData[i] });
+  }
+
+  return m;
 };
 
 export const fetchPayment = async () => {
@@ -140,4 +193,64 @@ export const fetchPayment = async () => {
   });
 
   return { paid: paid, pending: pending, failed: failed };
+};
+
+export const recentTransactions = async () => {
+  const data = await db.order.findMany({
+    where: {
+      payment: "PAID",
+      createdAt: {
+        gt: lastDay,
+      },
+    },
+    select: {
+      User: { select: { avatarUrl: true, name: true, email: true } },
+      totalAmount: true,
+    },
+    take: 5,
+  });
+  return data;
+};
+
+export const createUser = async ({
+  email,
+  mobile,
+  name,
+  address,
+  avatarUrl,
+}: {
+  email: string;
+  mobile: string;
+  name: string;
+  address: string;
+  avatarUrl: string;
+}) => {
+  const existing = await db.user.findFirst({
+    where: { email },
+  });
+  if (existing) {
+    throw new Error("User Already exists");
+  }
+
+  await db.user.create({
+    data: {
+      name,
+      email,
+      address,
+      avatarUrl,
+      mobile,
+    },
+  });
+  return { success: true };
+};
+
+export const deleteUser = async ({ userId }: { userId: string }) => {
+  try {
+    await db.user.delete({
+      where: { id: userId },
+    });
+    return { success: true };
+  } catch (error) {
+    return error;
+  }
 };

@@ -30,11 +30,17 @@ const ProductPage = () => {
     queryFn: () => fetchProductsByStatus(),
   });
 
-  if (!products) return;
+  if (!products)
+    return (
+      <div className="w-full h-full animate-pulse flex gap-4 p-4 rounded-md">
+        <div className="h-full w-full flex-1 bg-muted rounded-md" />
+        <div className="h-1/2 w-full flex-[.4] bg-muted rounded-md" />
+      </div>
+    );
 
   return (
     <div>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
         <Breadcrumb className="hidden md:flex">
           <BreadcrumbList>
             <BreadcrumbItem>

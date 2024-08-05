@@ -119,7 +119,7 @@ const OrderChart = ({ month, week, statusData }: ChartProps) => {
 
   if (!data)
     return (
-      <div className="w-full h-[350px] flex items-center justify-center bg-muted/50 animate-pulse rounded-md p-2 gap-4">
+      <div className="w-full h-[300px] flex items-center justify-center animate-pulse rounded-md p-2 gap-4">
         <div className="flex-1 aspect-square bg-muted w-full h-full rounded-md" />
         <div className="flex-1 aspect-square bg-muted w-full h-full rounded-md" />
         <div className="flex-1 aspect-square bg-muted w-full h-full rounded-md" />

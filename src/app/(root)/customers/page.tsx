@@ -23,16 +23,27 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import UserChart from "@/components/charts/user-chart";
 import { useQuery } from "@tanstack/react-query";
+import UserDrawer from "@/components/drawers/user-drawer";
 
 const Customers = () => {
   const { data } = useQuery({
     queryKey: ["customers"],
     queryFn: () => fetchUsers(),
   });
-  if (!data) return;
+  if (!data)
+    return (
+      <div className="w-full h-full grid grid-cols-4 gap-6 p-6 animate-pulse">
+        <div className="w-full h-full bg-muted rounded-md col-span-3" />
+        <div className=" grid grid-cols-1 gap-4">
+          <div className="w-full h-full bg-muted rounded-md" />
+          <div className="w-full h-full bg-muted rounded-md" />
+          <div className="w-full h-full bg-muted rounded-md" />
+        </div>
+      </div>
+    );
   return (
     <div>
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
         <Breadcrumb className="hidden md:flex">
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -62,12 +73,7 @@ const Customers = () => {
               <TabsTrigger value="all">All</TabsTrigger>
             </TabsList>
             <div className="ml-auto flex items-center gap-2">
-              <Button className=" gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Customer
-                </span>
-              </Button>
+              <UserDrawer />
             </div>
           </div>
           <TabsContent value="all">
