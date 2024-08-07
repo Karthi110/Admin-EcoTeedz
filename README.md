@@ -9,8 +9,8 @@
 
 # Variant creation
 ### variants are dynamically and recursively created
-<img width="450" alt="image" src="https://github.com/user-attachments/assets/6998c1bf-e74e-4d39-990e-82cd9c7476f5">
-<img width="410" alt="image" src="https://github.com/user-attachments/assets/154b41be-4fdb-4c93-8dd9-ff3a1d2b40d0">
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/dc2df585-a99b-4508-99f2-ddd7bc25dc5d">
+
 
 # Order Panel
 <img width="900" alt="image" src="https://github.com/user-attachments/assets/1e99b057-58bc-49c2-bbff-78be30df20d8">
