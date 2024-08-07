@@ -5,15 +5,12 @@ import {
   Breadcrumb,
   BreadcrumbList,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   fetchActiveProducts,
-  fetchOrders,
   monthlyIncome,
   recentTransactions,
   totalEarnings,
@@ -25,9 +22,7 @@ import {
   IndianRupee,
   BadgeIndianRupee,
   ReceiptIndianRupee,
-  Search,
 } from "lucide-react";
-import Link from "next/link";
 
 const Dashboard = () => {
   const data = useQueries({
@@ -60,7 +55,7 @@ const Dashboard = () => {
           <div className="h-full w-full  bg-muted rounded-md" />
           <div className="h-full w-full bg-muted rounded-md" />
         </div>
-        <div className="grid grid-cols-3 gap-4 p-4">
+        <div className="grid grid-cols-2 gap-4 p-4">
           <div className="h-[300px] bg-muted rounded-md" />
           <div className="h-full bg-muted rounded-md" />
         </div>

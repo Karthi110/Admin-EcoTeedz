@@ -72,9 +72,9 @@ const ProductPage = () => {
               <TabsTrigger value="draft">Draft</TabsTrigger>
             </TabsList>
             <div className="ml-auto flex items-center gap-2">
-              <Button size="lg" className="gap-1" asChild>
+              <Button className="gap-1" asChild>
                 <Link href="/products/new">
-                  <PlusCircle size={24} />
+                  <PlusCircle size={20} />
                   <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                     Add Product
                   </span>

@@ -55,7 +55,7 @@ model VariantOptions {
   price     Float    @default(0.0)
   inventory Int      @default(0)
   productId String?
-  Product   Product? @relation(fields: [productId], references: [id])
+  Product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Cart {
@@ -73,7 +73,7 @@ model Order {
   totalAmount Float
   status      OrderStatus   @default(PENDING)
   payment     PaymentStatus @default(PENDING)
-  User        User?         @relation(fields: [userId], references: [id])
+  User        User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -97,6 +97,6 @@ model OrderItem {
   variantId String?
   quantity  Int
   price     Float
-  Order     Order?  @relation(fields: [orderId], references: [id])
+  Order     Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String?
 }

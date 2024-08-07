@@ -14,8 +14,8 @@ const UserDrawer = () => {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button className="gap-1" variant="outline">
-          <PlusCircle className="h-3.5 w-3.5" />
+        <Button className="gap-1">
+          <PlusCircle size={16} />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
             Add Customer
           </span>

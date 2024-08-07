@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DrawerClose } from "../ui/drawer";
-import { FormSchema } from "@/lib/formSchemas";
+import { userSchema } from "@/lib/formSchemas";
 import { Textarea } from "../ui/textarea";
 import ImageUploader from "../image-uploader";
 import { useState } from "react";
@@ -24,10 +24,10 @@ import { createUser } from "@/db/actions";
 
 export function UserForm() {
   const queryClient = useQueryClient();
-  const [imgUrl, setImgUrl] = useState<string>("");
+  const [imgUrl, setImgUrl] = useState<string[]>([]);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof userSchema>>({
+    resolver: zodResolver(userSchema),
     defaultValues: {
       address: "",
       email: "",
@@ -45,25 +45,22 @@ export function UserForm() {
     onError: ({ message }) => toast.error(message),
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
+  function onSubmit(data: z.infer<typeof userSchema>) {
     mutate({
       name: data.name,
       email: data.email,
       address: data.address,
       mobile: data.modile,
-      avatarUrl: imgUrl,
+      avatarUrl: imgUrl[0],
     });
   }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="w-[70%] space-y-6 rounded-md border-2 p-4"
-      >
-        <div className="grid grid-cols-3 gap-4">
-          <ImageUploader imgUrl={imgUrl} setImgUrl={setImgUrl} />
-          <div className="grid grid-cols-1 gap-2 col-span-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-[70%] py-4">
+        <div className="grid grid-cols-3 border-2 rounded-lg gap-2 p-2">
+          <ImageUploader imgUrl={imgUrl} setImgUrl={setImgUrl} type="user" />
+          <div className="grid grid-cols-1 gap-2 col-span-2 border-2 rounded-lg p-4 border-dashed">
             <FormField
               control={form.control}
               name="name"
@@ -116,14 +113,14 @@ export function UserForm() {
                 </FormItem>
               )}
             />
-            <div className="flex w-full gap-2 items-center justify-center">
+            <div className="flex w-full gap-4 items-center justify-center mt-4">
               <DrawerClose asChild>
-                <Button type="submit" className="w-full">
+                <Button type="submit" size="lg" className="w-full">
                   Submit
                 </Button>
               </DrawerClose>
               <DrawerClose asChild>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" size="lg" className="w-full">
                   Cancel
                 </Button>
               </DrawerClose>

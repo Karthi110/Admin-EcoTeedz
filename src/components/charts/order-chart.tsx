@@ -291,7 +291,7 @@ const OrderChart = ({ month, week, statusData }: ChartProps) => {
                               y={(viewBox.cy || 0) + 24}
                               className="fill-muted-foreground"
                             >
-                              Orders
+                              {OrderData[activeIndex].status}
                             </tspan>
                           </text>
                         );

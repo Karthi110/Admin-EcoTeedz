@@ -13,9 +13,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  Check,
+  ChevronDown,
+  Edit,
+  MoreHorizontal,
+  Trash2,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -35,6 +42,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { deleteOrder } from "@/db/actions";
+import { toast } from "sonner";
 
 interface Order {
   id: string;
@@ -48,126 +58,163 @@ interface Order {
   _count: { orderItems: number };
 }
 
-export const columns: ColumnDef<Order>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "id",
-    header: "OrderId",
-    cell: ({ row }) => (
-      <h1 className="w-1/2 truncate text-sm">{row.getValue("id")}</h1>
-    ),
-  },
-  {
-    accessorKey: "User",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Customer
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <h2>{row.original.User?.email}</h2>,
-  },
-  {
-    accessorKey: "_count",
-    header: "Items",
-    cell: ({ row }) => <h2>{row.original._count.orderItems}</h2>,
-  },
-  {
-    accessorKey: "totalAmount",
-    header: "Order Total",
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("totalAmount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-      }).format(amount);
-
-      return <div className="text-start font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Shipping",
-    cell: ({ row }) => <h2>{row.getValue("status")}</h2>,
-  },
-  {
-    accessorKey: "payment",
-    header: "Payment",
-    cell: ({ row }) => <h2>{row.getValue("payment")}</h2>,
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }) => (
-      <p className="text-sm">{row.original.createdAt.toDateString()}</p>
-    ),
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const order = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(order.id)}
-            >
-              Copy Order ID
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(order.userId!)}
-            >
-              Copy User ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View Order</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-            <DropdownMenuItem>Delete Order</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
 export function OrderTable({ data }: { data: Order[] }) {
+  const queryClient = useQueryClient();
+
+  const { mutate: deleteMultiple } = useMutation({
+    mutationFn: async () => {
+      table
+        .getFilteredSelectedRowModel()
+        .rows.map((row) => deleteOrder({ orderId: row.original.id }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      toast.success("multiple orders deleted!");
+    },
+    onError: ({ message }) => toast.error(message),
+  });
+
+  const { mutate: deleteSingle } = useMutation({
+    mutationFn: deleteOrder,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      toast.success("multiple orders deleted!");
+    },
+    onError: ({ message }) => toast.error(message),
+  });
+
+  const columns: ColumnDef<Order>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "id",
+      header: "OrderId",
+      cell: ({ row }) => (
+        <h1 className="w-1/2 truncate text-sm">{row.getValue("id")}</h1>
+      ),
+    },
+
+    {
+      accessorKey: "User",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Customer
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => <h2>{row.original.User?.email}</h2>,
+    },
+    {
+      accessorKey: "_count",
+      header: "Items",
+      cell: ({ row }) => <h2>{row.original._count.orderItems}</h2>,
+    },
+    {
+      accessorKey: "totalAmount",
+      header: "Order Total",
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("totalAmount"));
+
+        const formatted = new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+        }).format(amount);
+
+        return <div className="text-start font-medium">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Shipping",
+      cell: ({ row }) => <h2>{row.getValue("status")}</h2>,
+    },
+    {
+      accessorKey: "payment",
+      header: "Payment",
+      cell: ({ row }) => <h2>{row.getValue("payment")}</h2>,
+    },
+    {
+      accessorKey: "createdAt",
+      header: "Created At",
+      cell: ({ row }) => (
+        <p className="text-sm">{row.original.createdAt.toDateString()}</p>
+      ),
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const order = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="p-1">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => {
+                  navigator.clipboard.writeText(order.id);
+                  toast.success("copied to clipboard!");
+                }}
+              >
+                Copy Order ID
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  navigator.clipboard.writeText(order.userId!);
+                  toast.success("copied to clipboard!");
+                }}
+              >
+                Copy User ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Edit size={20} />
+                View Order
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => deleteSingle({ orderId: order.id })}
+                className="text-destructive"
+              >
+                <Trash2 size={20} />
+                Delete Order
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -199,10 +246,10 @@ export function OrderTable({ data }: { data: Order[] }) {
     <div className="w-full flex-1 bg-background rounded-md p-4 h-fit">
       <div className="flex items-center py-4 ">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("User")?.getFilterValue() as string) ?? ""}
+          placeholder="Filter OrderId..."
+          value={(table.getColumn("id")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("User")?.setFilterValue(event.target.value)
+            table.getColumn("id")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -232,6 +279,15 @@ export function OrderTable({ data }: { data: Order[] }) {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        {table.getFilteredSelectedRowModel().rows.length !== 0 ? (
+          <Button
+            className="ml-2"
+            variant="destructive"
+            onClick={() => deleteMultiple()}
+          >
+            Delete
+          </Button>
+        ) : null}
       </div>
       <div className="rounded-md border">
         <Table>

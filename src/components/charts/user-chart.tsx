@@ -49,7 +49,9 @@ export function UserChart({ total }: { total: number }) {
         <Card className="h-fit">
           <CardHeader className="pb-2">
             <CardDescription>This Week</CardDescription>
-            <CardTitle className="text-3xl">+{data?.week} Customers</CardTitle>
+            <CardTitle className="text-3xl">
+              +{data?.week} Customer(s).
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground">
@@ -57,13 +59,15 @@ export function UserChart({ total }: { total: number }) {
             </div>
           </CardContent>
           <CardFooter>
-            <Progress value={data?.week!} aria-label="25% increase" />
+            <Progress value={data?.week! * 10} aria-label="25% increase" />
           </CardFooter>
         </Card>
         <Card className="h-fit">
           <CardHeader className="pb-2">
             <CardDescription>This Month</CardDescription>
-            <CardTitle className="text-3xl">+{data?.month} Customers</CardTitle>
+            <CardTitle className="text-3xl">
+              +{data?.month} Customer(s).
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground">
@@ -71,7 +75,7 @@ export function UserChart({ total }: { total: number }) {
             </div>
           </CardContent>
           <CardFooter>
-            <Progress value={data?.month! * 0.1} aria-label="25% increase" />
+            <Progress value={data?.month!} aria-label="25% increase" />
           </CardFooter>
         </Card>
       </div>

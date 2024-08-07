@@ -1,7 +1,8 @@
 "use server";
 
-import { User } from "@prisma/client";
+import { Product, ProductStatus } from "@prisma/client";
 import { db } from ".";
+import { optionProps, variantProps } from "@/components/forms/product-form";
 
 let ld = Date.now() - 24 * 60 * 60 * 1000;
 let lastDay = new Date(ld).toISOString();
@@ -15,7 +16,7 @@ export const fetchUsers = async () => {
     const data = await db.user.findMany({});
     return data;
   } catch (error) {
-    console.log(error);
+    return error;
   }
 };
 
@@ -149,7 +150,7 @@ export const monthlyIncome = async () => {
   let m: Array<{ month: string; amount: number }> = [];
   monthly.map((mon) =>
     m.push({
-      month: mon.createdAt.getMonth().toString(),
+      month: mon.createdAt.toLocaleString("default", { month: "long" }),
       amount: mon._sum.totalAmount || 0,
     })
   );
@@ -248,6 +249,172 @@ export const deleteUser = async ({ userId }: { userId: string }) => {
   try {
     await db.user.delete({
       where: { id: userId },
+    });
+    return { success: true };
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteOrder = async ({ orderId }: { orderId: string }) => {
+  try {
+    await db.order.delete({
+      where: { id: orderId },
+    });
+    return { success: true };
+  } catch (error) {
+    return error;
+  }
+};
+
+export const createProduct = async ({
+  title,
+  comparePrice,
+  description,
+  inventory,
+  media,
+  price,
+  status,
+  options,
+  variant,
+}: {
+  title: string;
+  comparePrice: string;
+  description: string;
+  inventory: string;
+  media: string[];
+  price: string;
+  status: string;
+  variant: variantProps[];
+  options: optionProps[];
+}) => {
+  try {
+    const product = await db.product.create({
+      data: {
+        title,
+        description,
+        comparePrice: Number(comparePrice),
+        price: Number(price),
+        media,
+        status: status as ProductStatus,
+        inventory: Number(inventory),
+      },
+    });
+    if (variant.length !== 0 && options.length !== 0) {
+      variant.map(async (vari) => {
+        await db.variant.create({
+          data: {
+            name: vari.name,
+            options: vari.options,
+            productId: product.id,
+          },
+        });
+      });
+      options.map(async (opt) => {
+        await db.variantOptions.create({
+          data: {
+            option: opt.option,
+            price: Number(opt.price),
+            inventory: Number(opt.inventory),
+            productId: product.id,
+          },
+        });
+      });
+      return { success: true };
+    }
+    return { success: true };
+  } catch (error) {
+    return error;
+  }
+};
+
+export const fetchProduct = async ({ productId }: { productId: string }) => {
+  const data = await db.product.findFirst({
+    where: {
+      id: productId,
+    },
+    include: {
+      Variant: { select: { name: true, options: true } },
+      variantOptions: {
+        select: { option: true, price: true, inventory: true },
+      },
+    },
+  });
+  return data;
+};
+
+export const updateProduct = async ({
+  product,
+  options,
+  variant,
+}: {
+  product: {
+    id: string;
+    title: string;
+    comparePrice: number;
+    description: string;
+    inventory: number;
+    media: string[];
+    price: number;
+    status: ProductStatus;
+  };
+  variant: variantProps[];
+  options: optionProps[];
+}) => {
+  await db.product.update({
+    where: { id: product.id },
+    data: { ...product },
+  });
+
+  if (variant.length !== 0 && options.length !== 0) {
+    await db.variant.deleteMany({ where: { productId: product.id } });
+    await db.variantOptions.deleteMany({ where: { productId: product.id } });
+    variant.map(async (vari) => {
+      await db.variant.create({
+        data: {
+          name: vari.name,
+          options: vari.options,
+          productId: product.id,
+        },
+      });
+    });
+    options.map(async (opt) => {
+      await db.variantOptions.create({
+        data: {
+          option: opt.option,
+          price: Number(opt.price),
+          inventory: Number(opt.inventory),
+          productId: product.id,
+        },
+      });
+    });
+    return { success: true };
+  }
+  return { success: true };
+};
+
+export const changeStatus = async ({
+  id,
+  status,
+}: {
+  id: string;
+  status: string;
+}) => {
+  try {
+    await db.product.update({
+      where: { id },
+      data: { status: status as ProductStatus },
+    });
+    return { success: true };
+  } catch (error) {
+    return error;
+  }
+};
+
+export const deleteProduct = async ({ productId }: { productId: string }) => {
+  try {
+    await db.product.delete({
+      where: { id: productId },
     });
     return { success: true };
   } catch (error) {

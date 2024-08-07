@@ -53,6 +53,19 @@ export function UserTable({ data }: { data: User[] }) {
     onError: ({ message }) => toast.error(message),
   });
 
+  const { mutate: deleteMultiple } = useMutation({
+    mutationFn: async () => {
+      table
+        .getFilteredSelectedRowModel()
+        .rows.map((row) => deleteUser({ userId: row.original.id }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      toast.success("multiple customers deleted!");
+    },
+    onError: ({ message }) => toast.error(message),
+  });
+
   const columns: ColumnDef<User>[] = [
     {
       id: "select",
@@ -223,6 +236,15 @@ export function UserTable({ data }: { data: User[] }) {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        {table.getFilteredSelectedRowModel().rows.length !== 0 ? (
+          <Button
+            className="ml-2"
+            variant="destructive"
+            onClick={() => deleteMultiple()}
+          >
+            Delete
+          </Button>
+        ) : null}
       </div>
       <div className="rounded-md border">
         <Table>
