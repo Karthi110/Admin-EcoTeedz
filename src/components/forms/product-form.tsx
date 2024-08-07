@@ -343,7 +343,7 @@ export function ProductForm({ variantOptions, product, variants }: PageProps) {
         </div>
         <Button
           size="lg"
-          className="text-lg ml-auto col-span-2"
+          className="ml-auto col-span-3"
           type="submit"
           disabled={imgUrls.length === 0}
         >

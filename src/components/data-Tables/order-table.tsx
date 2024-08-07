@@ -15,7 +15,6 @@ import {
 } from "@tanstack/react-table";
 import {
   ArrowUpDown,
-  Check,
   ChevronDown,
   Edit,
   MoreHorizontal,
@@ -45,6 +44,17 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteOrder } from "@/db/actions";
 import { toast } from "sonner";
+import OrderDetails from "../drawers/order-dialog";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "../ui/alert-dialog";
+import { AlertDialogHeader, AlertDialogFooter } from "../ui/alert-dialog";
 
 interface Order {
   id: string;
@@ -69,7 +79,9 @@ export function OrderTable({ data }: { data: Order[] }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["payment"] });
       toast.success("multiple orders deleted!");
+      table.resetRowSelection();
     },
     onError: ({ message }) => toast.error(message),
   });
@@ -78,6 +90,7 @@ export function OrderTable({ data }: { data: Order[] }) {
     mutationFn: deleteOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["payment"] });
       toast.success("multiple orders deleted!");
     },
     onError: ({ message }) => toast.error(message),
@@ -109,9 +122,7 @@ export function OrderTable({ data }: { data: Order[] }) {
     {
       accessorKey: "id",
       header: "OrderId",
-      cell: ({ row }) => (
-        <h1 className="w-1/2 truncate text-sm">{row.getValue("id")}</h1>
-      ),
+      cell: ({ row }) => <OrderDetails text={row.getValue("id")} />,
     },
 
     {
@@ -280,13 +291,31 @@ export function OrderTable({ data }: { data: Order[] }) {
           </DropdownMenuContent>
         </DropdownMenu>
         {table.getFilteredSelectedRowModel().rows.length !== 0 ? (
-          <Button
-            className="ml-2"
-            variant="destructive"
-            onClick={() => deleteMultiple()}
-          >
-            Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild className="ml-2">
+              <Button variant="destructive">
+                Delete <Trash2 size={20} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  orders and remove them from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteMultiple()}
+                  className={buttonVariants({ variant: "destructive" })}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ) : null}
       </div>
       <div className="rounded-md border">

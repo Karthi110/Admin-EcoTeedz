@@ -24,6 +24,7 @@ import Link from "next/link";
 import UserChart from "@/components/charts/user-chart";
 import { useQuery } from "@tanstack/react-query";
 import UserDrawer from "@/components/drawers/user-drawer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Customers = () => {
   const { data } = useQuery({
@@ -32,12 +33,12 @@ const Customers = () => {
   });
   if (!data)
     return (
-      <div className="w-full h-full grid grid-cols-4 gap-6 p-6 animate-pulse">
-        <div className="w-full h-full bg-muted rounded-md col-span-3" />
+      <div className="w-full h-full grid grid-cols-4 gap-6 p-6 ">
+        <Skeleton className="w-full h-full bg-muted rounded-md col-span-3" />
         <div className=" grid grid-cols-1 gap-4">
-          <div className="w-full h-full bg-muted rounded-md" />
-          <div className="w-full h-full bg-muted rounded-md" />
-          <div className="w-full h-full bg-muted rounded-md" />
+          <Skeleton className="w-full h-full bg-muted rounded-md" />
+          <Skeleton className="w-full h-full bg-muted rounded-md" />
+          <Skeleton className="w-full h-full bg-muted rounded-md" />
         </div>
       </div>
     );
@@ -82,7 +83,7 @@ const Customers = () => {
                 <CardTitle>Customers</CardTitle>
                 <CardDescription>Manage your customers here.</CardDescription>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent>
                 <UserTable data={data} />
               </CardContent>
             </Card>

@@ -9,6 +9,7 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   fetchActiveProducts,
   monthlyIncome,
@@ -48,16 +49,16 @@ const Dashboard = () => {
 
   if (!data[0].data || !data[1].data || !data[2].data || !data[3].data) {
     return (
-      <div className="w-full h-fit p-4 rounded-md animate-pulse">
+      <div className="w-full h-fit p-4 rounded-md">
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 p-4">
-          <div className="h-[120px] w-full bg-muted rounded-md" />
-          <div className="h-full w-full bg-muted rounded-md" />
-          <div className="h-full w-full  bg-muted rounded-md" />
-          <div className="h-full w-full bg-muted rounded-md" />
+          <Skeleton className="h-[120px] w-full bg-muted rounded-md" />
+          <Skeleton className="h-full w-full bg-muted rounded-md" />
+          <Skeleton className="h-full w-full  bg-muted rounded-md" />
+          <Skeleton className="h-full w-full bg-muted rounded-md" />
         </div>
         <div className="grid grid-cols-2 gap-4 p-4">
-          <div className="h-[300px] bg-muted rounded-md" />
-          <div className="h-full bg-muted rounded-md" />
+          <Skeleton className="h-[500px] bg-muted rounded-md" />
+          <Skeleton className="h-full bg-muted rounded-md" />
         </div>
       </div>
     );

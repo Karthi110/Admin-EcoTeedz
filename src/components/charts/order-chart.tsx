@@ -150,7 +150,7 @@ const OrderChart = ({ month, week, statusData }: ChartProps) => {
         <CardContent>
           <Button>Create New Order</Button>
         </CardContent>
-        <CardFooter className="w-full flex items-center justify-center gap-2">
+        <CardFooter className="w-full grid grid-cols-2 items-center justify-center gap-6">
           <Card className="flex-1">
             <CardHeader className="pb-2">
               <CardDescription>This Week</CardDescription>

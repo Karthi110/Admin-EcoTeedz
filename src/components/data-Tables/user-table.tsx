@@ -13,9 +13,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
@@ -40,6 +40,17 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteUser } from "@/db/actions";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../ui/alert-dialog";
 
 export function UserTable({ data }: { data: User[] }) {
   const queryClient = useQueryClient();
@@ -61,6 +72,7 @@ export function UserTable({ data }: { data: User[] }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["customers"] });
+      table.resetRowSelection();
       toast.success("multiple customers deleted!");
     },
     onError: ({ message }) => toast.error(message),
@@ -161,6 +173,7 @@ export function UserTable({ data }: { data: User[] }) {
               <DropdownMenuSeparator />
               <DropdownMenuItem>Edit customer</DropdownMenuItem>
               <DropdownMenuItem
+                className="text-destructive"
                 onClick={() => deleteCustomer({ userId: user.id })}
               >
                 Delete Customer
@@ -200,7 +213,7 @@ export function UserTable({ data }: { data: User[] }) {
   });
 
   return (
-    <div className="w-full flex-1 bg-background rounded-md p-4 h-fit">
+    <div className="w-full flex-1 bg-background rounded-md p-4">
       <div className="flex items-center py-4 ">
         <Input
           placeholder="Filter emails..."
@@ -237,13 +250,31 @@ export function UserTable({ data }: { data: User[] }) {
           </DropdownMenuContent>
         </DropdownMenu>
         {table.getFilteredSelectedRowModel().rows.length !== 0 ? (
-          <Button
-            className="ml-2"
-            variant="destructive"
-            onClick={() => deleteMultiple()}
-          >
-            Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild className="ml-2">
+              <Button variant="destructive">
+                Delete <Trash2 size={20} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  customer and remove them from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteMultiple()}
+                  className={buttonVariants({ variant: "destructive" })}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ) : null}
       </div>
       <div className="rounded-md border">

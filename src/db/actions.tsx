@@ -1,6 +1,6 @@
 "use server";
 
-import { Product, ProductStatus } from "@prisma/client";
+import { ProductStatus } from "@prisma/client";
 import { db } from ".";
 import { optionProps, variantProps } from "@/components/forms/product-form";
 
@@ -16,7 +16,7 @@ export const fetchUsers = async () => {
     const data = await db.user.findMany({});
     return data;
   } catch (error) {
-    return error;
+    return [];
   }
 };
 
@@ -29,7 +29,9 @@ export const CountProductsByStatus = async () => {
 };
 
 export const fetchProductsByStatus = async () => {
-  const products = await db.product.findMany();
+  const products = await db.product.findMany({
+    include: { _count: true },
+  });
 
   let ActiveProducts = products.filter(
     (product) => product.status === "ACTIVE"

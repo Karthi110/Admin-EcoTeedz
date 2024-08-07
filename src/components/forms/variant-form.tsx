@@ -74,7 +74,7 @@ const VariantForm = ({
       <AlertDialogTrigger asChild>
         <Button className="w-fit">
           <PlusCircle size={20} />
-          Add variant
+          Add Variant
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

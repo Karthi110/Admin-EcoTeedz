@@ -18,6 +18,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchProductsByStatus } from "@/db/actions";
 import { useQuery } from "@tanstack/react-query";
@@ -32,9 +33,9 @@ const ProductPage = () => {
 
   if (!products)
     return (
-      <div className="w-full h-full animate-pulse flex gap-4 p-4 rounded-md">
-        <div className="h-full w-full flex-1 bg-muted rounded-md" />
-        <div className="h-1/2 w-full flex-[.4] bg-muted rounded-md" />
+      <div className="w-full h-full flex gap-4 p-4 rounded-md">
+        <Skeleton className="h-full w-full flex-1 bg-muted rounded-md" />
+        <Skeleton className="h-1/2 w-full flex-[.4] bg-muted rounded-md" />
       </div>
     );
 

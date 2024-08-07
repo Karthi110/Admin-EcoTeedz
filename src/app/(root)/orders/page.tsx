@@ -21,8 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderTable } from "@/components/data-Tables/order-table";
 import { fetchOrders } from "@/db/actions";
 import OrderChart from "@/components/charts/order-chart";
-import OrderDetails from "@/components/order-details";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const OrderPage = () => {
   const { data } = useQuery({
@@ -31,15 +31,14 @@ const OrderPage = () => {
   });
   if (!data)
     return (
-      <div className="h-full w-full flex flex-col p-4">
-        <div className="w-full h-full flex-[.8] grid grid-cols-3 animate-pulse rounded-md p-2 gap-4">
-          <div className="bg-muted w-full h-full rounded-md" />
-          <div className="bg-muted w-full h-full rounded-md" />
-          <div className="bg-muted w-full h-full rounded-md" />
+      <div className="h-screen w-full flex flex-col p-4">
+        <div className="w-full h-full flex-1 grid grid-cols-4 rounded-md items-center p-2 gap-4">
+          <Skeleton className="bg-muted w-full h-full rounded-md col-span-2" />
+          <Skeleton className="bg-muted aspect-square rounded-md" />
+          <Skeleton className="bg-muted aspect-square rounded-md" />
         </div>
-        <div className="flex-1 grid grid-cols-3 gap-4 p-2">
-          <div className="bg-muted w-full h-full rounded-md col-span-2" />
-          <div className="bg-muted w-full h-full rounded-md" />
+        <div className="flex-1 grid gap-4 p-2">
+          <Skeleton className="bg-muted w-full h-full rounded-md" />
         </div>
       </div>
     );
@@ -78,7 +77,7 @@ const OrderPage = () => {
             canceled: data.canceled,
           }}
         />
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid gap-4">
           <Tabs defaultValue="all" className="col-span-3">
             <div className="flex items-center">
               <TabsList>
@@ -141,7 +140,6 @@ const OrderPage = () => {
               </Card>
             </TabsContent>
           </Tabs>
-          <OrderDetails />
         </div>
       </div>
     </div>

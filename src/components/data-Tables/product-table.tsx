@@ -35,7 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Product, ProductStatus } from "@prisma/client";
+import { $Enums } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
@@ -48,10 +48,36 @@ import {
   SelectValue,
   SelectContent,
   SelectGroup,
-  SelectLabel,
   SelectItem,
 } from "../ui/select";
-import { db } from "@/db";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogHeader,
+  AlertDialogFooter,
+} from "../ui/alert-dialog";
+
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  media: string[];
+  status: $Enums.ProductStatus;
+  comparePrice: number | null;
+  price: number;
+  inventory: number;
+  createdAt: Date;
+  updatedAt: Date;
+  _count: {
+    Variant: number;
+    variantOptions: number;
+  };
+}
 
 export function ProductTable({ data }: { data: Product[] }) {
   const queryClient = useQueryClient();
@@ -85,6 +111,7 @@ export function ProductTable({ data }: { data: Product[] }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["chart_data"] });
+      table.resetRowSelection();
       toast.success("multiple products deleted!");
     },
     onError: ({ message }) => toast.error(message),
@@ -159,7 +186,13 @@ export function ProductTable({ data }: { data: Product[] }) {
           defaultValue={row.getValue("status")}
           onValueChange={(e) => change({ id: row.original.id, status: e })}
         >
-          <SelectTrigger className="w-[90px]">
+          <SelectTrigger
+            className={buttonVariants({
+              className: "w-[85%]",
+              variant: "secondary",
+              size: "sm",
+            })}
+          >
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -185,6 +218,15 @@ export function ProductTable({ data }: { data: Product[] }) {
 
         return <div className="text-start font-medium">{formatted}</div>;
       },
+    },
+    {
+      accessorKey: "_count",
+      header: "Variants",
+      cell: ({ row }) => (
+        <div className="text-start font-medium">
+          {row.original._count.variantOptions}
+        </div>
+      ),
     },
     {
       accessorKey: "inventory",
@@ -276,7 +318,7 @@ export function ProductTable({ data }: { data: Product[] }) {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full flex-1 bg-background rounded-md p-4">
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter products..."
@@ -313,13 +355,31 @@ export function ProductTable({ data }: { data: Product[] }) {
           </DropdownMenuContent>
         </DropdownMenu>
         {table.getFilteredSelectedRowModel().rows.length !== 0 ? (
-          <Button
-            className="ml-2"
-            variant="destructive"
-            onClick={() => deleteMultiple()}
-          >
-            Delete
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild className="ml-2">
+              <Button variant="destructive">
+                Delete <Trash2 size={20} />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently deletethe
+                  orders and remove them from our servers.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteMultiple()}
+                  className={buttonVariants({ variant: "destructive" })}
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ) : null}
       </div>
       <div className="rounded-md border">
