@@ -1,5 +1,5 @@
 # Admin Login Panel
-<img width="900" alt="image" src="https://github.com/user-attachments/assets/ad537b22-91b9-4c18-85a0-27507f01765a">
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/b39203d5-f632-4b7c-910f-d86ef36cb32e">
 
 # Analytic Dashboard
 <img width="900" alt="image" src="https://github.com/user-attachments/assets/f615d9a4-9c45-4bc0-8034-6338e2bb2a07">
