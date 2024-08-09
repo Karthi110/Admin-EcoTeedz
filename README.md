@@ -30,5 +30,5 @@
 ### The components you see are from <a href='https://ui.shadcn.com/'>shadcnui<a> library 
 
 ### todo
--[ ] create orders.
--[ ] display orders properly.
+-[ ] create orders.<br>
+-[ ] display orders properly.<br>
