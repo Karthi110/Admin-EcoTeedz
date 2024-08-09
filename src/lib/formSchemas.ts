@@ -31,3 +31,17 @@ export const productSchema = z.object({
     message: "Inventory must not be 0.",
   }),
 });
+
+export const orderaSchema = z.object({
+  totalAmount: z.number().min(1, { message: "must be greater than 0 " }),
+  userId: z.string(),
+  items: z.array(
+    z.object({
+      productId: z.string(),
+      quantity: z
+        .number()
+        .min(1, { message: "quantity must be greater than 1" }),
+      price: z.number(),
+    })
+  ),
+});
