@@ -5,7 +5,10 @@ import { ThemeProvider } from "@/components/providers/theme-prvider";
 import Provider from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 
-const font = DM_Sans({ subsets: ["latin"] });
+const font = DM_Sans({
+  weight: ["400", "500", "700", "600"],
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
